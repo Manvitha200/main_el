@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+</head>
+<body>
+    <h2>Signup</h2>
+    <form id="signup-form" method="POST">
+        <label for="user_id">User ID:</label><br>
+        <input type="number" id="user_id" name="user_id" required><br><br>
+        
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <label for="role">Role:</label><br>
+        <select id="role" name="role" required>
+            <option value="manager">Manager</option>
+            <option value="employee">Employee</option>
+        </select><br><br>
+
+        <div id="employee-fields" style="display: none;">
+            <label for="skills">Skills (comma separated):</label><br>
+            <input type="text" id="skills" name="skills"><br><br>
+
+            <label for="preferences">Preferences (comma separated):</label><br>
+            <input type="text" id="preferences" name="preferences"><br><br>
+        </div>
+
+        <button type="submit">Signup</button>
+    </form>
+
+    <div id="error-message" style="color: red;"></div>
+
+    <script>
+        // Show employee-specific fields when "employee" role is selected
+        document.getElementById('role').addEventListener('change', function() {
+            if (this.value === 'employee') {
+                document.getElementById('employee-fields').style.display = 'block';
+            } else {
+                document.getElementById('employee-fields').style.display = 'none';
+            }
+        });
+
+        document.getElementById('signup-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const userId = document.getElementById('user_id').value;
+            const name = document.getElementById('name').value;  // Add this line
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+            const skills = role === 'employee' ? document.getElementById('skills').value.split(',') : [];
+            const preferences = role === 'employee' ? document.getElementById('preferences').value.split(',') : [];
+
+            const response = await fetch('/signup/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    name: name,
+                    email: email,
+                    password: password,
+                    role: role,
+                    skills: skills,
+                    preferences: preferences
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                window.location.href = '/login';  // Redirect to the login page after successful signup
+            } else {
+                document.getElementById('error-message').innerText = data.error || 'An error occurred';
+            }
+        });
+    </script>
+</body>
+</html>

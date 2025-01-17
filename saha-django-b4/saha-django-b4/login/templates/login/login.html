@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login</h2>
+    <form id="login-form" method="POST">
+        <label for="user_id">User ID:</label><br>
+        <input type="number" id="user_id" name="user_id" required><br><br>
+
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <label for="role">Role:</label><br>
+        <select id="role" name="role" required>
+            <option value="manager">Manager</option>
+            <option value="employee">Employee</option>
+        </select><br><br>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <div id="error-message" style="color: red;"></div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const userId = document.getElementById('user_id').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+
+            const response = await fetch('/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    password: password,
+                    role: role
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                window.location.href = '/dashboard';  // Redirect to the dashboard page after successful login
+            } else {
+                document.getElementById('error-message').innerText = data.error || 'An error occurred';
+            }
+        });
+    </script>
+</body>
+</html>
